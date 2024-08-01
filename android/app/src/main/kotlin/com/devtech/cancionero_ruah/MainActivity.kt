@@ -1,4 +1,4 @@
-package com.example.cancioneroruah
+package com.devtech.cancionero_ruah
 
 import io.flutter.embedding.android.FlutterActivity
 
