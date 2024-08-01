@@ -1,3 +1,5 @@
+import 'package:cancioneroruah/config/router/app_router.dart';
+import 'package:cancioneroruah/config/config.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -9,12 +11,10 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
-    );
+    return MaterialApp.router(
+      routerConfig: appRouter,
+      theme: AppTheme().getTheme(),
+      debugShowCheckedModeBanner: false,
+      );
   }
 }

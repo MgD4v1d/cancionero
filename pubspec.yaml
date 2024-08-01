@@ -9,11 +9,19 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  go_router: ^14.2.1
+  google_fonts: ^6.2.1
 
 dev_dependencies:
+  flutter_lints: ^3.0.0
   flutter_test:
     sdk: flutter
-  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/loaders/
+    - google_fonts/roboto_mono/
