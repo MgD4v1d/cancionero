@@ -1,75 +1,65 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:cancioneroruah/presentation/providers/providers.dart';
+import 'package:go_router/go_router.dart';
 
-
-class SideMenu extends StatefulWidget {
-
-  final GlobalKey<ScaffoldState> scaffoldKey;
-
-  const SideMenu({
-    super.key,
-    required this.scaffoldKey
-  });
+class SideMenu extends ConsumerWidget{
+  const SideMenu({super.key});
 
   @override
-  State<SideMenu> createState() => _SideMenuState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
 
-class _SideMenuState extends State<SideMenu> {
+    final colors = Theme.of(context).colorScheme; 
 
-  int navDrawerIndex = 0;
+    final user = ref.watch(authChangeNotifierProvider).user;
 
-  @override
-  Widget build(BuildContext context) {
+    return Drawer(
+      child: NavigationDrawer(
+        elevation: 1,
+        children: [
 
-    final hasNotch = MediaQuery.of(context).viewPadding.top > 35;
-    final textStyles = Theme.of(context).textTheme; 
-
-    return NavigationDrawer(
-      elevation: 1,
-      selectedIndex: navDrawerIndex,
-      onDestinationSelected: (value){
-        setState(() {
-          navDrawerIndex = value;
-        });
-
-        widget.scaffoldKey.currentState?.closeDrawer();
-      },
-
-      children: [
-
-        Padding(
-          padding: EdgeInsets.fromLTRB(20, hasNotch ? 0 : 20, 16, 0),
-          child: Text('Saludos', style: textStyles.titleMedium ),
-        ),
-
-        const NavigationDrawerDestination(
-            icon: Icon( Icons.home_outlined ), 
-            label: Text( 'Productos' ),
-        ),
-
-
-        const Padding(
-          padding: EdgeInsets.fromLTRB(28, 16, 28, 10),
-          child: Divider(),
-        ),
-
-        const Padding(
-          padding: EdgeInsets.fromLTRB(28, 10, 16, 10),
-          child: Text('Otras opciones'),
-        ),
-
-        
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: FilledButton(
-            onPressed: () {},
-            child: const Text('Cerrar session'),
+          UserAccountsDrawerHeader(
+            decoration: BoxDecoration(
+              color: colors.primary
+            ),
+            accountName: Text(user?.name ?? 'Guest'),
+            accountEmail: Text(user?.email ?? ''),
+            currentAccountPicture: CircleAvatar(
+              backgroundImage: NetworkImage(
+                user?.photoUrl ?? 'https://via.placeholder.com/150'
+              ),
+             ),
           ),
-        ),
 
-      ],
+          const Padding(
+            padding: EdgeInsets.fromLTRB(28, 10, 16, 10),
+            child: Text('Otras opciones'),
+          ),
 
+          const Padding(
+            padding: EdgeInsets.fromLTRB(28, 16, 28, 10),
+            child: Divider(),
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text('Preferencias'),
+            onTap: () {
+            },
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.logout),
+            title: const Text('Cerrar Sesión'),
+            onTap: () {
+              ref.read(authChangeNotifierProvider.notifier).signOut();
+              context.go('/');
+            },
+          ),
+
+        ],
+      ),
     );
-
   }
+
 }

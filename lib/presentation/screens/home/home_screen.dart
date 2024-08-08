@@ -1,35 +1,61 @@
-import 'package:cancioneroruah/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-class HomeScreen extends StatelessWidget {
+import 'package:cancioneroruah/presentation/providers/song/song_provider.dart';
+import 'package:cancioneroruah/presentation/widgets/widgets.dart';
 
+class HomeScreen extends ConsumerStatefulWidget {
   static const String name = 'home-screen';
 
   const HomeScreen({super.key});
 
   @override
+  ConsumerState<HomeScreen> createState() => _HomeScreen();
+}
+
+class _HomeScreen extends ConsumerState<HomeScreen> {
+  @override
   Widget build(BuildContext context) {
-    
-    final scaffoldKey = GlobalKey<ScaffoldState>();
+    final songCountAsyncValue = ref.watch(songsCountProvider);
 
     return Scaffold(
-      drawer: SideMenu(scaffoldKey: scaffoldKey),
+      drawer: const SideMenu(),
       appBar: AppBar(
         title: const Text('Cancionero Ruah'),
       ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(allSongsProvider);
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: GridView.count(crossAxisCount: 2, children: [
 
-      body: const _HomeView(),
-    );
-  }
-}
+            songCountAsyncValue.when(
+              data: (countSongs) {
+                return HomeGridItem(
+                  icon: Icons.list,
+                  count: countSongs,
+                  label: 'Lista de canciones',
+                  onTap: () => context.go('/home/all-songs'),
+                );
+              },
+              loading: () => const Center(child: Text('Cargando...'),),
+              error: (error, stack) => Center(child: Text('Errors: $error')),
+            ),
 
-class _HomeView extends StatelessWidget {
-  const _HomeView();
 
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Eres genal!!!'),
+            HomeGridItem(
+              icon: Icons.queue_music,
+              label: 'Mis Esquemas',
+              onTap: () => context.go('/home/repertories'),
+            ),
+
+
+          ]),
+        ),
+      ),
     );
   }
 }

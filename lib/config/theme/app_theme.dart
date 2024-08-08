@@ -18,7 +18,9 @@ class AppTheme {
       titleMedium: GoogleFonts.robotoMono()
         .copyWith(fontSize: 30, fontWeight: FontWeight.bold),
       titleSmall: GoogleFonts.robotoMono()
-        .copyWith(fontSize: 20)
+        .copyWith(fontSize: 20, fontWeight: FontWeight.bold),
+      bodySmall: GoogleFonts.robotoMono()
+        .copyWith(fontSize: 12) 
     ),
 
     //* Scaffold Background Color
@@ -41,7 +43,7 @@ class AppTheme {
     appBarTheme: AppBarTheme(
       color: scaffoldBackgroundColor,
       titleTextStyle: GoogleFonts.robotoMono()
-        .copyWith(fontSize: 25, fontWeight: FontWeight.bold, color: Colors.black)
+        .copyWith(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black)
     ),
 
   );
