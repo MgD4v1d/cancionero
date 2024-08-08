@@ -1,6 +1,5 @@
 
 import 'package:cancioneroruah/domain/domain.dart';
-import 'package:cancioneroruah/domain/entities/song/song.dart';
 import 'package:cancioneroruah/infrastructure/infrastructure.dart';
 import 'package:cancioneroruah/infrastructure/mappers/song/song_mapper.dart';
 

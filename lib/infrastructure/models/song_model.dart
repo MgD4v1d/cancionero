@@ -31,4 +31,26 @@ class SongModel {
       'videoUrl': videoUrl,
     
   };
+
+  // Constructor para crear una instancia desde un mapa (opcional)
+  factory SongModel.fromMap(Map<String, dynamic> map) {
+    return SongModel(
+      id: map['id'] ?? '',
+      title: map['title'] ?? '',
+      artist: map['artist'] ?? '',
+      lyrics: map['lyrics'] ?? '',
+      videoUrl: map['videoUrl'],
+    );
+  }
+
+  // Convertir la instancia a un mapa (opcional)
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'artist': artist,
+      'lyrics': lyrics,
+      'videoUrl': videoUrl,
+    };
+  }
 }
