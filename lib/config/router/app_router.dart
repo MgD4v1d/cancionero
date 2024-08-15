@@ -1,3 +1,5 @@
+import 'package:cancioneroruah/domain/domain.dart';
+import 'package:cancioneroruah/domain/entities/song/repertoire.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -51,21 +53,56 @@ final appRouter = Provider<GoRouter>((ref) {
               builder: (context, state) => const AllSongsScreen(),
               routes: [
                 GoRoute(
-                  path: ':songId',
+                  path: 'song-detail',
                   name: SongDetailScreen.name,
                   builder: (context, state) {
-                    final songId = state.pathParameters['songId']!;
-                    return SongDetailScreen(songId: songId);
+                    final song = state.extra as Song;
+
+                    return SongDetailScreen(song: song);
                   },
                 ),
-            ],
+              ],
             ),
 
             GoRoute(
               path: 'repertories',
               name: RepertorieScreen.name,
               builder: (context, state) =>  const RepertorieScreen(),
+              routes: [
+                GoRoute(
+                  path: 'repertoire-detail',
+                  name: ListRepertoireScreen.name,
+                  builder: (context, state) {
+                    final repertoire = state.extra as Repertoire;
+                    return ListRepertoireScreen(repertoire: repertoire);
+                  },
+                  routes: [
+                    GoRoute(
+                      path: 'repertoire-song-detail',
+                      name: RepertoireSongDetailScreen.name,
+                      builder: (context, state) {
+                        final song = state.extra as Song;
+
+                        return RepertoireSongDetailScreen(song: song);
+                      },
+                    ),
+                  ]
+                ),
+
+                
+              ]
             ),
+
+            GoRoute(
+              path: 'add-repertoire',
+              name: AddSongsToRepertoireScreen.name,
+              builder: (context, state) {
+                final repertoireTitle = state.extra as String;
+                return AddSongsToRepertoireScreen(repertoireTitle: repertoireTitle);
+              },
+            ),
+
+            
           ]
         ),
       ]);

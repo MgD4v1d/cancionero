@@ -35,7 +35,7 @@ class _HomeScreen extends ConsumerState<HomeScreen> {
             songCountAsyncValue.when(
               data: (countSongs) {
                 return HomeGridItem(
-                  icon: Icons.list,
+                  icon: Icons.library_music,
                   count: countSongs,
                   label: 'Lista de canciones',
                   onTap: () => context.go('/home/all-songs'),

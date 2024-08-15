@@ -8,6 +8,7 @@ class RepertoireDatasource {
   RepertoireDatasource(this.firestore);
 
   Future<List<RepertoireModel>> getUserRepertoires(String userId) async {
+
     final snapshot = await firestore
         .collection('repertoires')
         .where('userId', isEqualTo: userId)
@@ -25,12 +26,26 @@ class RepertoireDatasource {
     await firestore.collection('repertoires').add(repertoire.toMap());
   }
 
-  Future<void> updateRepertoire(RepertoireModel repertoire) async {
-    await firestore.collection('repertoires').doc(repertoire.id).update(repertoire.toMap());
+  Future<void> updateRepertoire(String repertoreId, List<String> songIds) async {
+    await firestore.collection('repertoires').doc(repertoreId).update({
+      'songIds' : FieldValue.arrayUnion(songIds),
+    });
   }
 
-  Future<void> deleteRepertoire(String id) async {
-    await firestore.collection('repertoires').doc(id).delete();
+  Future<void> deleteRepertoire(String repertoireId) async {
+    await firestore.collection('repertoires').doc(repertoireId).delete();
+  }
+
+  Future<void> removeSongFromRepertoire(String repertoireId, String songId) async {
+    final docRef = firestore.collection('repertoires').doc(repertoireId);
+    final doc = await docRef.get();
+
+    if(doc.exists){
+      final data = doc.data()!;
+      final songIds = List<String>.from(data['songIds'] ?? []);
+      songIds.remove(songId);
+      await docRef.update({'songIds': songIds});
+    }
   }
 
 }

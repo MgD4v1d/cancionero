@@ -4,12 +4,12 @@ import 'package:cancioneroruah/presentation/providers/providers.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cancioneroruah/domain/domain.dart';
 
-class SongDetailScreen extends ConsumerWidget {
-  static const String name = 'song-detail-screen';
+class RepertoireSongDetailScreen extends ConsumerWidget {
+  static const String name = 'repertoire-song-detail-screen';
 
   final Song song;
 
-  const SongDetailScreen({super.key, required this.song});
+  const RepertoireSongDetailScreen({super.key, required this.song});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

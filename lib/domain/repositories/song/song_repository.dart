@@ -7,4 +7,6 @@ abstract class SongRepository {
   Future<Song> getSongById(String id);
 
   Future<int> getSongsCount();
+
+  Future<List<Song>> getSongsByIds(List<String> songIds);
 }

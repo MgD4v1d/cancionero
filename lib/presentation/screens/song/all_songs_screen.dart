@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import 'package:cancioneroruah/domain/entities/song/song.dart';
 import 'package:cancioneroruah/presentation/providers/providers.dart';
+import 'package:go_router/go_router.dart';
 
 class AllSongsScreen extends ConsumerStatefulWidget {
   static const String name = 'all-song-screen';
@@ -138,10 +138,8 @@ class _AllSongsScreen extends ConsumerState<AllSongsScreen> {
 
                 return ListTile(
                   leading: const CircleAvatar(
-                      child: Text(
-                    'Text',
-                    style: TextStyle(fontSize: 10),
-                  )),
+                      child: Icon(Icons.lyrics)
+                    ),
                   title: Text(
                     song.title,
                     style: titleStyle,
@@ -152,7 +150,7 @@ class _AllSongsScreen extends ConsumerState<AllSongsScreen> {
                   ),
                   onTap: () {
                     // Navigate to song details or perform another action
-                    context.go('/home/all-songs/${song.id}');
+                    context.go('/home/all-songs/song-detail', extra: song);
                   },
                 );
               },

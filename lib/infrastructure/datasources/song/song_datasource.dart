@@ -35,4 +35,16 @@ class SongDatasource {
     final querySnapshot = await firestore.collection('songs').get();
     return querySnapshot.size;
   }
+
+  Future<List<SongModel>> getSongsByIds(List<String> songIds) async {
+    final querySnapshot = await firestore
+        .collection('songs')
+        .where(FieldPath.documentId, whereIn: songIds)
+        .get();
+
+    return querySnapshot.docs.map((doc){
+      final data = doc.data();
+      return SongModel.fromJson(data);
+    }).toList();
+  }
 }

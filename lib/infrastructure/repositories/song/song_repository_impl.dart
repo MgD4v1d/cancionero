@@ -26,5 +26,11 @@ class SongRepositoryImpl implements SongRepository {
     final songModel = await datasource.getSongsCount();
     return songModel;
   }
+  
+  @override
+  Future<List<Song>> getSongsByIds(List<String> songIds) async{
+    final songModels = await datasource.getSongsByIds(songIds);
+    return songModels.map((model) => SongMapper.toDomain(model)).toList();
+  }
 
 }

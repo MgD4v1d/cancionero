@@ -25,10 +25,14 @@ final songsRefreshProvider = FutureProvider.autoDispose<List<Song>>((ref) async 
   return await songRepository.getAllSongs();
 });
 
+
 final songsCountProvider = FutureProvider<int>((ref) async {
   final songRepository = ref.read(songRepositoryProvider);
   return await songRepository.getSongsCount();
 });
+
+
+
 
 final textSizeProvider = StateNotifierProvider<TextSizeNotifier, double>((ref) {
   return TextSizeNotifier();

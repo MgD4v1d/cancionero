@@ -17,8 +17,8 @@ class RepertoireRepositoryImpl extends RepertoireRepository{
   }
 
   @override
-  Future<void> deleteRepertoire(String id) async{
-    await datasource.deleteRepertoire(id);
+  Future<void> deleteRepertoire(String repertoireId) async{
+    await datasource.deleteRepertoire(repertoireId);
   }
 
   @override
@@ -28,12 +28,15 @@ class RepertoireRepositoryImpl extends RepertoireRepository{
   }
 
   @override
-  Future<void> updateRepertoire(Repertoire repertoire) async {
-    final model = RepertoireMapper.toModel(repertoire);
-    await datasource.updateRepertoire(model);
+  Future<void> updateRepertoire(String repertoireId, List<String> songIds) async {
+    await datasource.updateRepertoire(repertoireId, songIds);
+  }
+  
+  @override
+  Future<void> removeSongFromRepertoire(String repertoireId, String songId) async{
+    await datasource.removeSongFromRepertoire(repertoireId, songId);
   }
 
-
-
+  
  
 }
