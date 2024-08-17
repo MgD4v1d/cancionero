@@ -1,10 +1,11 @@
 
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-//import 'package:cancioneroruah/domain/entities/song/repertoire.dart';
+import 'package:cancioneroruah/domain/entities/song/repertoire.dart';
 import 'package:cancioneroruah/presentation/notifiers/song/repertoire_notifier.dart';
 import 'package:cancioneroruah/presentation/providers/auth/auth_change_notifier.dart';
 import 'package:cancioneroruah/presentation/screens/screens.dart';
@@ -46,51 +47,56 @@ class _RepertorieScreen extends ConsumerState<RepertorieScreen> {
               itemCount: repertoires.length,
               itemBuilder: (context, index) {
                 final repertoire = repertoires[index];
-                return ListTile(
-                  title: Text(repertoire.title, style: GoogleFonts.robotoMono(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold
+                return FadeIn(
+                  delay: const Duration(milliseconds: 200),
+                  child: Card(
+                    child: ListTile(
+                      title: Text(repertoire.title, style: GoogleFonts.robotoMono(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold
+                        ),
+                      ),
+                      trailing: PopupMenuButton<String>(
+                        onSelected: (String value){
+                          if(value == 'edit'){
+                    
+                          }else{
+                            ref.read(repertoireNotifierProvider.notifier).deleteRepertoire(repertoire.id);
+                          }
+                        },
+                        itemBuilder: (BuildContext context) => [
+                          const PopupMenuItem(
+                            value: 'edit',
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(right: 8.0),
+                                  child: Icon(Icons.edit_note),
+                                ),
+                                Text('Editar Esquema'),
+                              ],
+                            ),
+                          ),
+                    
+                          const PopupMenuItem(
+                            value: 'delete',
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(right: 8.0),
+                                  child: Icon(Icons.delete),
+                                ),
+                                Text('Eliminar Esquema'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        context.go('/home/repertories/repertoire-detail', extra: repertoire);
+                      },
                     ),
                   ),
-                  trailing: PopupMenuButton<String>(
-                    onSelected: (String value){
-                      if(value == 'edit'){
-
-                      }else{
-                        ref.read(repertoireNotifierProvider.notifier).deleteRepertoire(repertoire.id);
-                      }
-                    },
-                    itemBuilder: (BuildContext context) => [
-                      const PopupMenuItem(
-                        value: 'edit',
-                        child: Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(right: 8.0),
-                              child: Icon(Icons.edit_note),
-                            ),
-                            Text('Editar Esquema'),
-                          ],
-                        ),
-                      ),
-
-                      const PopupMenuItem(
-                        value: 'delete',
-                        child: Row(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(right: 8.0),
-                              child: Icon(Icons.delete),
-                            ),
-                            Text('Eliminar Esquema'),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  onTap: () {
-                    context.go('/home/repertories/repertoire-detail', extra: repertoire);
-                  },
                 );
               },
             ),
@@ -103,11 +109,18 @@ class _RepertorieScreen extends ConsumerState<RepertorieScreen> {
           final name =  await _showAddRepertoireDialog(context);
           if (name != null && name.isNotEmpty) {
 
+            final newRepertoire = Repertoire(
+              id: '', 
+              title: name, 
+              userId: "", 
+              songIds: []
+            );
+
             if(context.mounted){
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => AddSongsToRepertoireScreen(
-                    repertoireTitle: name,
+                    repertoire: newRepertoire,
                   ),
                 ),
               );
@@ -174,17 +187,20 @@ class _PreAddRepertoire extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Text(
-                'No tienes esquemas agregados. \n Para agregar un "Esquema" pulsa el icono de abajo',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.robotoMono(fontWeight: FontWeight.bold)),
-          ),
-        ],
+    return FadeIn(
+      delay: const Duration(milliseconds: 200),
+      child: Center(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Text(
+                  'No tienes esquemas agregados. \n Para agregar un "Esquema" pulsa el icono de abajo',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.robotoMono(fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
       ),
     );
   }

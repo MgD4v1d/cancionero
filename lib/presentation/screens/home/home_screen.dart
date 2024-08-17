@@ -28,6 +28,7 @@ class _HomeScreen extends ConsumerState<HomeScreen> {
         onRefresh: () async {
           ref.invalidate(allSongsProvider);
         },
+        strokeWidth: 2,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: GridView.count(crossAxisCount: 2, children: [

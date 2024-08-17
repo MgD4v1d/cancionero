@@ -44,7 +44,6 @@ class AuthRepositoryImpl extends AuthRepository{
     final firebase_auth.User? user = await firebaseAuthDatasource.signInWithCredential(credential);
     if (user == null) return null;
 
-    //TODO: EXTRAC TO MAPPER
     return User(
       id: user.uid,
       name: user.displayName ?? '',

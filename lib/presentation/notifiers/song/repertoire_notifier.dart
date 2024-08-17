@@ -29,6 +29,12 @@ class RepertoireNotifier extends StateNotifier<List<Repertoire>> {
   }
 
 
+  Future<void> loadRepertoireById(String id) async {
+    final repertoire = await repository.getRepertoireById(id);
+    state = [repertoire]; // Actualiza el estado con el repertorio recuperado
+  }
+
+
   Future<void> addRepertoire(Repertoire repertoire, String userId) async {
       await repository.addRepertoire(repertoire);
       state = [...state, repertoire];
@@ -38,6 +44,18 @@ class RepertoireNotifier extends StateNotifier<List<Repertoire>> {
   Future<void> deleteRepertoire(String repertoireId) async {
      await repository.deleteRepertoire(repertoireId);
     state = state.where((repertoire) => repertoire.id != repertoireId).toList();
+  }
+
+  Future<void> updateRepertoire(String repertoireId, List<String> songIds) async {
+    await repository.updateRepertoire(repertoireId, songIds);
+    final repertoire = state.where((repertoire) => repertoire.id != repertoireId).first;
+    await loadRepertoires(repertoire.userId);
+  }
+
+  Future<void> updateSongOrder(String repertoireId, List<String> newOrder) async {
+    await repository.updateSongOrder(repertoireId, newOrder);
+     final updatedRepertoire = await repository.getRepertoireById(repertoireId);
+     state = state.map((r) => r.id == updatedRepertoire.id ? updatedRepertoire : r).toList();
   }
 
   Future<void> removeSongFromRepertoire(String repertoireId, String songId) async {
@@ -52,8 +70,7 @@ class RepertoireNotifier extends StateNotifier<List<Repertoire>> {
       return repertoire;
     }).toList();
   }
-
-
+  
 }
 
 final repertoireNotifierProvider = StateNotifierProvider<RepertoireNotifier, List<Repertoire>>((ref){

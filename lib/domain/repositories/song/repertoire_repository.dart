@@ -5,10 +5,11 @@ abstract class RepertoireRepository {
   // Future<void> addRepertoire(Repertoire repertoire);
   // Future<void> updateRepertoire(Repertoire repertoire);
   // Future<void> deleteRepertoire(String id);
-
+  Future<Repertoire> getRepertoireById(String id);
   Future<List<Repertoire>> getUserRepertoires(String userId);
   Future<void> addRepertoire(Repertoire repertoire);
   Future<void> deleteRepertoire(String repertoireId);
   Future<void> updateRepertoire(String repertoireId, List<String> songIds);
   Future<void> removeSongFromRepertoire(String repertoireId, String songId);
+  Future<void> updateSongOrder(String repertoireId, List<String> newOrder);
 }

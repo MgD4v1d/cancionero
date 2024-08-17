@@ -11,11 +11,11 @@ class AddSongsToRepertoireScreen extends ConsumerStatefulWidget {
 
   static const String name = 'add-repertoire';
 
-  final String repertoireTitle;
+  final Repertoire? repertoire;
 
   const AddSongsToRepertoireScreen({
     super.key,
-    required this.repertoireTitle
+    required this.repertoire
   });
 
   @override
@@ -25,7 +25,45 @@ class AddSongsToRepertoireScreen extends ConsumerStatefulWidget {
 class _AddSongsToRepertoireScreen extends ConsumerState<AddSongsToRepertoireScreen> {
 
   final List<String> selectedSongIds = [];
-  String _repertoireName = '';
+  bool _isSearching = false;
+  String _searchQuery = '';
+
+  final FocusNode _searchFocusNode = FocusNode();
+  final TextEditingController _searchController = TextEditingController();
+
+
+  void _startSearch() {
+    setState(() {
+      _isSearching = true;
+    });
+
+    Future.delayed(const Duration(milliseconds: 100), () {
+      _searchFocusNode.requestFocus();
+    });
+  }
+
+  void _stopSearch() {
+    setState(() {
+      _isSearching = false;
+      _searchQuery = '';
+      _searchController.clear();
+    });
+    _searchFocusNode.unfocus();
+  }
+
+  void _updateSearchQuery(String query) {
+    setState(() {
+      _searchQuery = query;
+    });
+  }
+  
+  @override
+  void initState() {
+    super.initState();
+    if(widget.repertoire != null){
+      selectedSongIds.addAll(widget.repertoire!.songIds);
+    }
+  }
 
   
 
@@ -35,13 +73,37 @@ class _AddSongsToRepertoireScreen extends ConsumerState<AddSongsToRepertoireScre
     final allSongsAsyncValue = ref.watch(allSongsProvider);
     final titleStyle = Theme.of(context).textTheme.titleSmall;
     final captionStyle = Theme.of(context).textTheme.bodySmall;
+    ref.watch(repertoireNotifierProvider);
     
-
-    _repertoireName = widget.repertoireTitle;
+    
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Agregar a : ${widget.repertoireTitle}'),
+        title: _isSearching
+          ? TextField(
+              controller: _searchController,
+              focusNode: _searchFocusNode,
+              onChanged: _updateSearchQuery,
+              decoration: const InputDecoration(
+                hintText: 'Buscar...',
+                border: InputBorder.none,
+                hintStyle: TextStyle(color: Colors.black54, fontSize: 16),
+              ),
+              style: const TextStyle(color: Colors.black),
+            )
+          : Text('Agregar a : ${widget.repertoire?.title}'),
+        
+         actions: [
+            (_isSearching)
+              ? IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: _stopSearch,
+                )
+              : IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: _startSearch,
+                ),
+         ]
       ),
 
       body: allSongsAsyncValue.when(
@@ -49,11 +111,19 @@ class _AddSongsToRepertoireScreen extends ConsumerState<AddSongsToRepertoireScre
 
           List<Song> displayedSongs = List.from(songs);
 
+           if (_searchQuery.isNotEmpty) {
+              displayedSongs = displayedSongs.where((song){
+                return song.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+                     song.artist.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+                     song.lyrics.toLowerCase().contains(_searchQuery.toLowerCase());
+              }).toList();
+            }
+
           return ListView.builder(
             itemCount: displayedSongs.length,
             itemBuilder: (context, index) {
 
-              final song = songs[index];
+              final song = displayedSongs[index];
               final isSelected = selectedSongIds.contains(song.id);
 
               return ListTile(
@@ -94,17 +164,22 @@ class _AddSongsToRepertoireScreen extends ConsumerState<AddSongsToRepertoireScre
 
         final user = ref.watch(authChangeNotifierProvider).user;
         final userId = user!.id;
-        final newRepertoire = Repertoire(
-          id: '', 
-          title: _repertoireName, 
-          userId: userId, 
-          songIds: selectedSongIds
-        );
 
-        //ref.read(repertoireRepositoryProvider).addRepertoire(newRepertoire);
-        ref.read(repertoireNotifierProvider.notifier).addRepertoire(newRepertoire, userId);
+        if (widget.repertoire!.id == "") {
+          final newRepertoire = Repertoire(
+            id: '', 
+            title: widget.repertoire!.title, 
+            userId: userId, 
+            songIds: selectedSongIds
+          );
+          //ref.read(repertoireRepositoryProvider).addRepertoire(newRepertoire);
+          ref.read(repertoireNotifierProvider.notifier).addRepertoire(newRepertoire, userId);
+          Navigator.of(context).pop('/home/repertories');
+        }else{
+          ref.read(repertoireNotifierProvider.notifier).updateRepertoire(widget.repertoire!.id, selectedSongIds);
+          Navigator.pop(context);
+        }
 
-        Navigator.of(context).pop('/home/repertories');
     }
 
 

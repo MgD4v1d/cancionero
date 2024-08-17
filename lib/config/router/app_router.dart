@@ -97,8 +97,8 @@ final appRouter = Provider<GoRouter>((ref) {
               path: 'add-repertoire',
               name: AddSongsToRepertoireScreen.name,
               builder: (context, state) {
-                final repertoireTitle = state.extra as String;
-                return AddSongsToRepertoireScreen(repertoireTitle: repertoireTitle);
+                final repertoire = state.extra as Repertoire;
+                return AddSongsToRepertoireScreen(repertoire: repertoire);
               },
             ),
 

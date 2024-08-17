@@ -36,6 +36,17 @@ class RepertoireRepositoryImpl extends RepertoireRepository{
   Future<void> removeSongFromRepertoire(String repertoireId, String songId) async{
     await datasource.removeSongFromRepertoire(repertoireId, songId);
   }
+  
+  @override
+  Future<void> updateSongOrder(String repertoireId, List<String> newOrder) async{
+    await datasource.updateSongOrder(repertoireId, newOrder);
+  }
+  
+  @override
+  Future<Repertoire> getRepertoireById(String id) async{
+    final repertoire = await datasource.getRepertoireById(id);
+    return RepertoireMapper.toEntity(repertoire);
+  }
 
   
  

@@ -1,12 +1,13 @@
-import 'package:cancioneroruah/presentation/screens/screens.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:animate_do/animate_do.dart';
 
+import 'package:cancioneroruah/presentation/screens/screens.dart';
 import 'package:cancioneroruah/presentation/notifiers/song/repertoire_notifier.dart';
 import 'package:cancioneroruah/domain/domain.dart';
 import 'package:cancioneroruah/domain/entities/song/repertoire.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 
 
@@ -23,8 +24,10 @@ class ListRepertoireScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
 
     final repertoireNotifier = ref.watch(repertoireNotifierProvider.notifier);
-    ref.watch(repertoireNotifierProvider);
+    //ref.watch(repertoireNotifierProvider);
     final captionStyle = Theme.of(context).textTheme.bodySmall;
+    final songIds = repertoire.songIds;
+
 
     return Scaffold(
       appBar: AppBar(
@@ -43,56 +46,79 @@ class ListRepertoireScreen extends ConsumerWidget {
           }
 
           final songs = snapshot.data!;
+          final orderedSongs = songIds.map((id) => songs.firstWhere((song) => song.id == id)).toList();
 
-          return ListView.builder(
-            itemCount: songs.length,
-            itemBuilder: (context, index) {
-              final song = songs[index];
-              return ListTile(
-                trailing: PopupMenuButton<String>(
-                  onSelected: (String value){
-                    if(value == 'delete'){
-                      _showDialogMessageDelete(context, ref, repertoire, song);
-                    }
-                  },
-                  itemBuilder: (BuildContext context) => [
-                    const PopupMenuItem(
-                      value: 'delete',
-                      child: Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(right: 8.0),
-                            child: Icon(Icons.delete),
+          return FadeIn(
+            child: ReorderableListView(
+              onReorder: (oldIndex, newIndex) async{
+                if(newIndex > oldIndex){
+                  newIndex--;
+                }
+                // Reorder the songs list
+                final song = orderedSongs.removeAt(oldIndex);
+                orderedSongs.insert(newIndex, song);
+
+                // Update the repertoire's song order in the backend
+                    await repertoireNotifier.updateSongOrder(
+                      repertoire.id,
+                      orderedSongs.map((song) => song.id).toList(),
+                    );
+              },
+              children: [
+                for (final song in orderedSongs)
+                  ListTile(
+                    key: ValueKey(song.id),
+                    trailing: PopupMenuButton<String>(
+                      onSelected: (String value) {
+                        if (value == 'delete') {
+                          _showDialogMessageDelete(context, ref, repertoire, song);
+                        }
+                      },
+                      itemBuilder: (BuildContext context) => [
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(right: 8.0),
+                                child: Icon(Icons.delete),
+                              ),
+                              Text('Eliminar'),
+                            ],
                           ),
-                          Text('Eliminar'),
-                        ],
+                        ),
+                      ],
+                    ),
+                    title: Text(
+                      song.title,
+                      style: GoogleFonts.robotoMono(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ],
-                ),
-                title: Text(song.title, style: GoogleFonts.robotoMono(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold
-                ),),
-                subtitle: Text(song.artist, style: captionStyle,),
-                onTap: () {
-                  // Aquí puedes agregar la navegación a una pantalla de detalles de la canción
-                  context.push('/home/repertories/repertoire-detail/repertoire-song-detail', extra: song);
-                },
-              );
-            },
+                    subtitle: Text(
+                      song.artist,
+                      style: captionStyle,
+                    ),
+                    onTap: () {
+                      context.push('/home/repertories/repertoire-detail/repertoire-song-detail', extra: song);
+                    },
+                  )
+
+              ],
+            )
           );
         }
       ),
 
       floatingActionButton: FloatingActionButton.extended(
-        icon: const Icon(Icons.add),
+        icon: const Icon(Icons.playlist_add),
         label: const Text('Agregar canciones al esquema'),
         onPressed: (){
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => AddSongsToRepertoireScreen(
-                repertoireTitle: repertoire.title,
+                repertoire: repertoire,
               ),
             ),
           );

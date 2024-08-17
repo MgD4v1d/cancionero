@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,6 +22,13 @@ class _AllSongsScreen extends ConsumerState<AllSongsScreen> {
 
   final FocusNode _searchFocusNode = FocusNode();
   final TextEditingController _searchController = TextEditingController();
+
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   void _toggleSortOrder() {
     setState(() {
@@ -136,22 +144,31 @@ class _AllSongsScreen extends ConsumerState<AllSongsScreen> {
               itemBuilder: (context, index) {
                 final song = displayedSongs[index];
 
-                return ListTile(
-                  leading: const CircleAvatar(
-                      child: Icon(Icons.lyrics)
+                return FadeIn(
+                  delay: const Duration(milliseconds: 200),
+                  child: Card(
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: const CircleAvatar(
+                              child: Icon(Icons.lyrics)
+                            ),
+                          title: Text(
+                            song.title,
+                            style: titleStyle,
+                          ),
+                          subtitle: Text(
+                            song.artist,
+                            style: captionStyle,
+                          ),
+                          onTap: () {
+                            // Navigate to song details or perform another action
+                            context.go('/home/all-songs/song-detail', extra: song);
+                          },
+                        ),
+                      ],
                     ),
-                  title: Text(
-                    song.title,
-                    style: titleStyle,
                   ),
-                  subtitle: Text(
-                    song.artist,
-                    style: captionStyle,
-                  ),
-                  onTap: () {
-                    // Navigate to song details or perform another action
-                    context.go('/home/all-songs/song-detail', extra: song);
-                  },
                 );
               },
             );

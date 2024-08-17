@@ -7,6 +7,24 @@ class RepertoireDatasource {
 
   RepertoireDatasource(this.firestore);
 
+  Future<RepertoireModel> getRepertoireById(String id) async {
+    final doc = await firestore.collection('repertoires').doc(id).get();
+
+    if (!doc.exists) {
+      throw Exception('Repertoire with id $id does not exist');
+    }
+
+    final data = doc.data();
+
+    if (data == null) {
+      throw Exception('No data found for repertoire with id $id');
+    }
+    return RepertoireModel.fromMap({
+        'id': doc.id,
+        ...data,
+    });
+  }
+
   Future<List<RepertoireModel>> getUserRepertoires(String userId) async {
 
     final snapshot = await firestore
@@ -29,6 +47,12 @@ class RepertoireDatasource {
   Future<void> updateRepertoire(String repertoreId, List<String> songIds) async {
     await firestore.collection('repertoires').doc(repertoreId).update({
       'songIds' : FieldValue.arrayUnion(songIds),
+    });
+  }
+
+  Future<void> updateSongOrder(String repertoireId, List<String> newOrder) async {
+    await firestore.collection('repertoires').doc(repertoireId).update({
+      'songIds': newOrder,
     });
   }
 
