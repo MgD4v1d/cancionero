@@ -11,16 +11,16 @@ import 'package:cancioneroruah/presentation/providers/auth/auth_change_notifier.
 import 'package:cancioneroruah/presentation/screens/screens.dart';
 
 
-class RepertorieScreen extends ConsumerStatefulWidget {
-  static const String name = 'repertorie-screen';
-  const RepertorieScreen({super.key});
+class RepertorieListScreen extends ConsumerStatefulWidget {
+  static const String name = 'repertorie-list-screen';
+  const RepertorieListScreen({super.key});
 
   @override
-  ConsumerState<RepertorieScreen> createState() => _RepertorieScreen();
+  ConsumerState<RepertorieListScreen> createState() => _RepertorieListScreen();
 }
 
 
-class _RepertorieScreen extends ConsumerState<RepertorieScreen> {
+class _RepertorieListScreen extends ConsumerState<RepertorieListScreen> {
 
   @override
   void initState() {
@@ -57,9 +57,12 @@ class _RepertorieScreen extends ConsumerState<RepertorieScreen> {
                         ),
                       ),
                       trailing: PopupMenuButton<String>(
-                        onSelected: (String value){
+                        onSelected: (String value) async {
                           if(value == 'edit'){
-                    
+                             final updatedName = await _showEditRepertoireDialog(context, repertoire);
+                             if (updatedName != null && updatedName.isNotEmpty) {
+                                ref.read(repertoireNotifierProvider.notifier).updateRepertoireTitle(repertoire.id, updatedName);
+                              }
                           }else{
                             ref.read(repertoireNotifierProvider.notifier).deleteRepertoire(repertoire.id);
                           }
@@ -104,7 +107,7 @@ class _RepertorieScreen extends ConsumerState<RepertorieScreen> {
 
       floatingActionButton: FloatingActionButton.extended(
         icon:  const Icon(Icons.add),
-        label: const Text('Agregar Esquema'),
+        label: const Text('Agregar esquema'),
         onPressed: () async{
           final name =  await _showAddRepertoireDialog(context);
           if (name != null && name.isNotEmpty) {
@@ -180,6 +183,49 @@ class _RepertorieScreen extends ConsumerState<RepertorieScreen> {
       },
     );
   }
+}
+
+Future<String?> _showEditRepertoireDialog(BuildContext context, Repertoire repertoire) async {
+  final GlobalKey<FormState> form = GlobalKey<FormState>();
+  final TextEditingController controller = TextEditingController(text: repertoire.title);
+
+  return showDialog<String>(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Editar nombre del esquema'),
+        content: Form(
+          key: form,
+          child: TextFormField(
+            controller: controller,
+            decoration: const InputDecoration(
+              hintText: "Nuevo título del esquema",
+              hintStyle: TextStyle(fontSize: 13)
+            ),
+            validator: (value) {
+              return (value != null && value.isEmpty) ? 'Agrega el nombre del Esquema' : null;
+            },
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancelar'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: const Text('Actualizar'),
+            onPressed: () {
+              if (form.currentState?.validate() ?? false) {
+                Navigator.of(context).pop(controller.text);
+              }
+            },
+          ),
+        ],
+      );
+    }
+  );
 }
 
 class _PreAddRepertoire extends StatelessWidget {

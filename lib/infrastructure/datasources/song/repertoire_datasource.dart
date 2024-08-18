@@ -7,6 +7,15 @@ class RepertoireDatasource {
 
   RepertoireDatasource(this.firestore);
 
+
+  Future<List<Map<String, dynamic>>> fetchRepertoires(String userId) async {
+    final querySnapshot = await firestore
+        .collection('repertoires')
+        .where('userId', isEqualTo: userId)
+        .get();
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
+  }
+
   Future<RepertoireModel> getRepertoireById(String id) async {
     final doc = await firestore.collection('repertoires').doc(id).get();
 
@@ -46,7 +55,7 @@ class RepertoireDatasource {
 
   Future<void> updateRepertoire(String repertoreId, List<String> songIds) async {
     await firestore.collection('repertoires').doc(repertoreId).update({
-      'songIds' : FieldValue.arrayUnion(songIds),
+      'songIds': songIds,
     });
   }
 
@@ -70,6 +79,12 @@ class RepertoireDatasource {
       songIds.remove(songId);
       await docRef.update({'songIds': songIds});
     }
+  }
+
+  Future<void> updateRepertoireTitle(String repertoireId, String newTitle) async {
+    await firestore.collection('repertoires').doc(repertoireId).update({
+      'title': newTitle,
+    });
   }
 
 }

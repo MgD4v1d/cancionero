@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cancioneroruah/presentation/providers/providers.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'package:cancioneroruah/presentation/providers/providers.dart';
 import 'package:cancioneroruah/domain/domain.dart';
 
 class RepertoireSongDetailScreen extends ConsumerWidget {
@@ -78,7 +80,9 @@ class RepertoireSongDetailScreen extends ConsumerWidget {
                   ),
                   
                   TextButton.icon(
-                    onPressed: (){},
+                    onPressed: () {
+                      _launchYouTube(song.videoUrl);
+                    },
                     icon: const Icon(Icons.smart_display, size: 40,),  
                     label: Text(
                       song.title,
@@ -98,4 +102,21 @@ class RepertoireSongDetailScreen extends ConsumerWidget {
           error: (error, stack) => Center(child: Text('Error: $error')),
         ));
   }
+
+
+  Future<void> _launchYouTube(String? videoUrl) async {
+  final Uri url = Uri.parse(videoUrl!);
+
+      // Verifica si la URL se puede lanzar
+      if (await canLaunchUrl(url)) {
+        await launchUrl(
+          url,
+          mode: LaunchMode.externalApplication
+        );
+      } else {
+        throw 'No se puede abrir la URL: $url';
+      }
+  }
+
+
 }

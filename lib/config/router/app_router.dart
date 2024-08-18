@@ -66,15 +66,15 @@ final appRouter = Provider<GoRouter>((ref) {
 
             GoRoute(
               path: 'repertories',
-              name: RepertorieScreen.name,
-              builder: (context, state) =>  const RepertorieScreen(),
+              name: RepertorieListScreen.name,
+              builder: (context, state) =>  const RepertorieListScreen(),
               routes: [
                 GoRoute(
                   path: 'repertoire-detail',
-                  name: ListRepertoireScreen.name,
+                  name: SelectedRepertoireScreen.name,
                   builder: (context, state) {
                     final repertoire = state.extra as Repertoire;
-                    return ListRepertoireScreen(repertoire: repertoire);
+                    return SelectedRepertoireScreen(repertoire: repertoire);
                   },
                   routes: [
                     GoRoute(

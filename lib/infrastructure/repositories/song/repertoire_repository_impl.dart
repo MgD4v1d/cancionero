@@ -47,6 +47,17 @@ class RepertoireRepositoryImpl extends RepertoireRepository{
     final repertoire = await datasource.getRepertoireById(id);
     return RepertoireMapper.toEntity(repertoire);
   }
+  
+  @override
+  Future<void> updateRepertoireTitle(String repertoireId, String newTitle) async {
+    await datasource.updateRepertoireTitle(repertoireId, newTitle);
+  }
+  
+  @override
+  Future<List<Repertoire>> getRepetoiresById(String userId) async { 
+    final repertoireMap = await datasource.fetchRepertoires(userId);
+    return repertoireMap.map((rep) => RepertoireMapper.fromMap(rep)).toList();
+  }
 
   
  

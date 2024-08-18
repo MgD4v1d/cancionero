@@ -57,11 +57,33 @@ class _AddSongsToRepertoireScreen extends ConsumerState<AddSongsToRepertoireScre
     });
   }
   
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
     if(widget.repertoire != null){
       selectedSongIds.addAll(widget.repertoire!.songIds);
+    }
+  }
+
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Refresca los datos del repertorio y actualiza selectedSongIds
+    if (widget.repertoire != null) {
+      ref.read(repertoireNotifierProvider.notifier).getRepertoireById(widget.repertoire!.id).then((repertoire) {
+        setState(() {
+          selectedSongIds.clear();
+          selectedSongIds.addAll(repertoire.songIds);
+        });
+      });
     }
   }
 
@@ -154,18 +176,18 @@ class _AddSongsToRepertoireScreen extends ConsumerState<AddSongsToRepertoireScre
       floatingActionButton: FloatingActionButton.extended(
           icon: const Icon(Icons.save),
           label: const Text('Guardar esquema'),
-          onPressed: _saveRepertoire
+          onPressed: () => _saveRepertoire(context)
         ),
     );
   }
     
     
-    void _saveRepertoire() async {
+    void _saveRepertoire(BuildContext context) async {
 
         final user = ref.watch(authChangeNotifierProvider).user;
         final userId = user!.id;
 
-        if (widget.repertoire!.id == "") {
+        if (widget.repertoire!.id.isEmpty){
           final newRepertoire = Repertoire(
             id: '', 
             title: widget.repertoire!.title, 
@@ -173,13 +195,15 @@ class _AddSongsToRepertoireScreen extends ConsumerState<AddSongsToRepertoireScre
             songIds: selectedSongIds
           );
           //ref.read(repertoireRepositoryProvider).addRepertoire(newRepertoire);
-          ref.read(repertoireNotifierProvider.notifier).addRepertoire(newRepertoire, userId);
-          Navigator.of(context).pop('/home/repertories');
+          await ref.read(repertoireNotifierProvider.notifier).addRepertoire(newRepertoire, userId);
+          //Navigator.of(context).pop('/home/repertories');
         }else{
-          ref.read(repertoireNotifierProvider.notifier).updateRepertoire(widget.repertoire!.id, selectedSongIds);
-          Navigator.pop(context);
+          await ref.read(repertoireNotifierProvider.notifier).updateRepertoire(widget.repertoire!.id, selectedSongIds);
         }
 
+        if(context.mounted){
+          Navigator.pop(context);
+        }
     }
 
 

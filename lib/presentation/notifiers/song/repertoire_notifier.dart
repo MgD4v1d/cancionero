@@ -15,18 +15,23 @@ class RepertoireNotifier extends StateNotifier<List<Repertoire>> {
 
   RepertoireNotifier(this.repository, this.songRepository) : super([]);
 
+
+  Future<Repertoire> getRepertoireById(String repertoireId) async {
+     return await repository.getRepertoireById(repertoireId);
+  }
+
   Future<void> loadRepertoires(String userId) async {
     final repertoires = await repository.getUserRepertoires(userId);
     state = repertoires;
     //return repertoires;
   }
 
-  Future<List<Song>> loadRepertoireSongs(String repertoireId) async {
-    final repertoire = state.firstWhere((r) => r.id == repertoireId);
-    final songIds = repertoire.songIds;
-    final songs = await Future.wait(songIds.map((id) => songRepository.getSongById(id)));
-    return songs; 
-  }
+  // Future<List<Song>> loadRepertoireSongs(String repertoireId) async {
+  //   final repertoire = state.firstWhere((r) => r.id == repertoireId);
+  //   final songIds = repertoire.songIds;
+  //   final songs = await Future.wait(songIds.map((id) => songRepository.getSongById(id)));
+  //   return songs; 
+  // }
 
 
   Future<void> loadRepertoireById(String id) async {
@@ -54,8 +59,13 @@ class RepertoireNotifier extends StateNotifier<List<Repertoire>> {
 
   Future<void> updateSongOrder(String repertoireId, List<String> newOrder) async {
     await repository.updateSongOrder(repertoireId, newOrder);
-     final updatedRepertoire = await repository.getRepertoireById(repertoireId);
-     state = state.map((r) => r.id == updatedRepertoire.id ? updatedRepertoire : r).toList();
+    final updatedRepertoire = await repository.getRepertoireById(repertoireId);
+    state = state.map((repertoire) {
+        if (repertoire.id == repertoireId) {
+          return updatedRepertoire;
+        }
+        return repertoire;
+      }).toList();
   }
 
   Future<void> removeSongFromRepertoire(String repertoireId, String songId) async {
@@ -69,6 +79,14 @@ class RepertoireNotifier extends StateNotifier<List<Repertoire>> {
       }
       return repertoire;
     }).toList();
+  }
+
+
+  Future<void> updateRepertoireTitle(String repertoireId, String newTitle) async {
+    await repository.updateRepertoireTitle(repertoireId, newTitle);
+    // Actualiza la lista de repertorios después de la actualización
+    final repertoire = state.where((repertoire) => repertoire.id != repertoireId).first;
+    await loadRepertoires(repertoire.userId);
   }
   
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cancioneroruah/firebase_options.dart';
+import 'package:cancioneroruah/config/firebase/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cancioneroruah/config/router/app_router.dart';
 import 'package:cancioneroruah/config/config.dart';

@@ -3,6 +3,14 @@ import 'package:cancioneroruah/infrastructure/models/repertoire_model.dart';
 
 class RepertoireMapper{
 
+  static Repertoire fromMap(Map<String, dynamic> map){
+    return Repertoire(
+      id: map['id'] as String, 
+      title: map['title'] as String, 
+      userId: map['userId'] as String, 
+      songIds: List<String>.from(map['songIds'] as List<dynamic>),
+    );
+  }
 
   static RepertoireModel toModel(Repertoire repertoire) => RepertoireModel(
       id: repertoire.id, 
