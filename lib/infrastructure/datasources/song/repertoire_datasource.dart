@@ -8,14 +8,6 @@ class RepertoireDatasource {
   RepertoireDatasource(this.firestore);
 
 
-  Future<List<Map<String, dynamic>>> fetchRepertoires(String userId) async {
-    final querySnapshot = await firestore
-        .collection('repertoires')
-        .where('userId', isEqualTo: userId)
-        .get();
-    return querySnapshot.docs.map((doc) => doc.data()).toList();
-  }
-
   Future<RepertoireModel> getRepertoireById(String id) async {
     final doc = await firestore.collection('repertoires').doc(id).get();
 
@@ -49,11 +41,16 @@ class RepertoireDatasource {
     }).toList();
   }
 
-  Future<void> addRepertoire(RepertoireModel repertoire) async {
-    await firestore.collection('repertoires').add(repertoire.toMap());
+  Future<String> addRepertoire(RepertoireModel repertoire) async {
+    final docRef = await firestore.collection('repertoires').add(repertoire.toMap());
+    return docRef.id;    
   }
 
-  Future<void> updateRepertoire(String repertoreId, List<String> songIds) async {
+  Future<void> updateRepertoire(String repertoreId, RepertoireModel repertoire) async {
+    await firestore.collection('repertoires').doc(repertoreId).update(repertoire.toMap());
+  }
+
+  Future<void> updateSongsToRepertoire(String repertoreId, List<String> songIds) async {
     await firestore.collection('repertoires').doc(repertoreId).update({
       'songIds': songIds,
     });

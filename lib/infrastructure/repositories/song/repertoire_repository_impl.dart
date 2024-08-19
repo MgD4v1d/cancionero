@@ -11,9 +11,11 @@ class RepertoireRepositoryImpl extends RepertoireRepository{
   RepertoireRepositoryImpl(this.datasource);
 
   @override
-  Future<void> addRepertoire(Repertoire repertoire) async{
+  Future<String> addRepertoire(Repertoire repertoire) async{
     final model = RepertoireMapper.toModel(repertoire);
-    await datasource.addRepertoire(model);
+    final documentId = await datasource.addRepertoire(model);
+    return documentId;
+
   }
 
   @override
@@ -28,8 +30,14 @@ class RepertoireRepositoryImpl extends RepertoireRepository{
   }
 
   @override
-  Future<void> updateRepertoire(String repertoireId, List<String> songIds) async {
-    await datasource.updateRepertoire(repertoireId, songIds);
+  Future<void> updateRepertoire(String repertoireId, Repertoire repertoire) async{
+    final model = RepertoireMapper.toModel(repertoire);
+    await datasource.updateRepertoire(repertoireId, model);
+  }
+
+  @override
+  Future<void> updateSongsToRepertoire(String repertoireId, List<String> songIds) async {
+    await datasource.updateSongsToRepertoire(repertoireId, songIds);
   }
   
   @override
@@ -52,13 +60,6 @@ class RepertoireRepositoryImpl extends RepertoireRepository{
   Future<void> updateRepertoireTitle(String repertoireId, String newTitle) async {
     await datasource.updateRepertoireTitle(repertoireId, newTitle);
   }
-  
-  @override
-  Future<List<Repertoire>> getRepetoiresById(String userId) async { 
-    final repertoireMap = await datasource.fetchRepertoires(userId);
-    return repertoireMap.map((rep) => RepertoireMapper.fromMap(rep)).toList();
-  }
-
-  
+      
  
 }

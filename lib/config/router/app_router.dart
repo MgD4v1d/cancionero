@@ -101,9 +101,16 @@ final appRouter = Provider<GoRouter>((ref) {
                 return AddSongsToRepertoireScreen(repertoire: repertoire);
               },
             ),
-
-            
-          ]
+  
+            GoRoute(
+              path: 'theme-changer',
+              name: ThemeChangerScreen.name,
+              builder: (context, state) => const ThemeChangerScreen(),
+            ),
+          ],
+          
         ),
+
       ]);
+    
 });

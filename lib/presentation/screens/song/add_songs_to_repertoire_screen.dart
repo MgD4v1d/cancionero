@@ -184,22 +184,9 @@ class _AddSongsToRepertoireScreen extends ConsumerState<AddSongsToRepertoireScre
     
     void _saveRepertoire(BuildContext context) async {
 
-        final user = ref.watch(authChangeNotifierProvider).user;
-        final userId = user!.id;
-
-        if (widget.repertoire!.id.isEmpty){
-          final newRepertoire = Repertoire(
-            id: '', 
-            title: widget.repertoire!.title, 
-            userId: userId, 
-            songIds: selectedSongIds
-          );
-          //ref.read(repertoireRepositoryProvider).addRepertoire(newRepertoire);
-          await ref.read(repertoireNotifierProvider.notifier).addRepertoire(newRepertoire, userId);
-          //Navigator.of(context).pop('/home/repertories');
-        }else{
-          await ref.read(repertoireNotifierProvider.notifier).updateRepertoire(widget.repertoire!.id, selectedSongIds);
-        }
+        
+        await ref.read(repertoireNotifierProvider.notifier).updateSongsToRepertoire(widget.repertoire!.id, selectedSongIds);
+        
 
         if(context.mounted){
           Navigator.pop(context);

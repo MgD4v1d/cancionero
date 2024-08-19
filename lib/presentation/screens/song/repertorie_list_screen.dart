@@ -112,19 +112,22 @@ class _RepertorieListScreen extends ConsumerState<RepertorieListScreen> {
           final name =  await _showAddRepertoireDialog(context);
           if (name != null && name.isNotEmpty) {
 
+            final user = ref.watch(authChangeNotifierProvider).user;
+            final userId = user!.id;
+
             final newRepertoire = Repertoire(
               id: '', 
               title: name, 
-              userId: "", 
+              userId: userId, 
               songIds: []
             );
+
+            final newRepertoireObj = await ref.read(repertoireNotifierProvider.notifier).addRepertoire(newRepertoire, userId);
 
             if(context.mounted){
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => AddSongsToRepertoireScreen(
-                    repertoire: newRepertoire,
-                  ),
+                  builder: (context) => SelectedRepertoireScreen(repertoire: newRepertoireObj!)
                 ),
               );
             }
